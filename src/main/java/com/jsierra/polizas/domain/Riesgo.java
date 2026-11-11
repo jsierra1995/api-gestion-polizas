@@ -1,5 +1,6 @@
 package com.jsierra.polizas.domain;
 
+import com.jsierra.polizas.exception.ConflictoEstadoException;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -67,6 +68,15 @@ public class Riesgo {
     /** Solo Poliza.agregarRiesgo enlaza el riesgo (mismo paquete). */
     void asignarPoliza(Poliza poliza) {
         this.poliza = poliza;
+    }
+
+    /** Solo la póliza (raíz del agregado) cancela sus riesgos. */
+    void cancelar(LocalDateTime ahora) {
+        if (!estaActivo()) {
+            throw new ConflictoEstadoException("El riesgo " + id + " ya está cancelado");
+        }
+        this.estado = EstadoRiesgo.CANCELADO;
+        this.fechaCancelacion = ahora;
     }
 
     public boolean estaActivo() {

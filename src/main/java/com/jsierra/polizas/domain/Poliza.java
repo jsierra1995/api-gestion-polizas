@@ -18,6 +18,7 @@ import jakarta.persistence.Version;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -142,6 +143,17 @@ public class Poliza {
         this.fechaInicioVigencia = fechaFinVigencia.plusDays(1);
         this.fechaFinVigencia = calcularFinVigencia(fechaInicioVigencia, mesesVigencia);
         this.estado = EstadoPoliza.RENOVADA;
+    }
+
+    /** Cancela la póliza y, en el mismo cambio, todos sus riesgos activos. */
+    public void cancelar(LocalDateTime ahora) {
+        if (estado == EstadoPoliza.CANCELADA) {
+            throw new ConflictoEstadoException("La póliza " + numero + " ya está cancelada");
+        }
+        this.estado = EstadoPoliza.CANCELADA;
+        riesgos.stream()
+                .filter(Riesgo::estaActivo)
+                .forEach(riesgo -> riesgo.cancelar(ahora));
     }
 
     private static BigDecimal calcularPrima(BigDecimal canonMensual, int mesesVigencia) {

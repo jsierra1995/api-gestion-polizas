@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -47,6 +48,15 @@ public class PolizaService {
         Poliza poliza = buscar(id);
         poliza.renovar(ipc);
         eventos.publishEvent(PolizaModificada.dePoliza(id, Operacion.RENOVACION));
+        return PolizaResponse.desde(poliza);
+    }
+
+    /** 404 si no existe; 409 si ya estaba cancelada. Póliza y riesgos cambian en la misma transacción. */
+    @Transactional
+    public PolizaResponse cancelar(Long id) {
+        Poliza poliza = buscar(id);
+        poliza.cancelar(LocalDateTime.now());
+        eventos.publishEvent(PolizaModificada.dePoliza(id, Operacion.CANCELACION));
         return PolizaResponse.desde(poliza);
     }
 

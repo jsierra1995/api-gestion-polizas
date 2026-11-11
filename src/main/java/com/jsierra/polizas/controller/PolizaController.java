@@ -44,4 +44,9 @@ public class PolizaController {
     public PolizaResponse renovar(@PathVariable Long id) {
         return polizaService.renovar(id);
     }
+
+    @PostMapping("/{id}/cancelar")
+    public PolizaResponse cancelar(@PathVariable Long id) {
+        return polizaService.cancelar(id);
+    }
 }

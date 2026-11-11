@@ -12,6 +12,7 @@ import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -54,7 +55,14 @@ public class CargaDatosSemilla implements ApplicationRunner {
                 "Avenida 19 # 120-30 Apto 803, Bogotá", LocalDate.of(2025, 11, 1), 12, new BigDecimal("2000000.00"));
         renovada.renovar(ipc);
 
-        polizaRepository.saveAll(List.of(colectiva, individual, renovada));
+        // Póliza 4: COLECTIVA CANCELADA, con sus riesgos cancelados en cascada (riesgos 6 y 7)
+        Poliza cancelada = Poliza.colectiva("COL-0002", "Administración Edificio Torres del Parque P.H.",
+                LocalDate.of(2026, 2, 1), 12, new BigDecimal("1500000.00"));
+        cancelada.agregarRiesgo(Riesgo.nuevo("Mateo Ríos", "Lucía Fernández", "Carrera 5 # 26-15 Apto 1201, Bogotá"));
+        cancelada.agregarRiesgo(Riesgo.nuevo("Valentina Cruz", "Hernán Ortiz", "Carrera 5 # 26-15 Apto 1402, Bogotá"));
+        cancelada.cancelar(LocalDateTime.now());
+
+        polizaRepository.saveAll(List.of(colectiva, individual, renovada, cancelada));
         log.info("Datos semilla cargados: {} pólizas", polizaRepository.count());
     }
 }
