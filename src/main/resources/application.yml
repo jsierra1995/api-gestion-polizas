@@ -1,0 +1,7 @@
+spring:
+  application:
+    name: api-gestion-polizas
+  datasource:
+    url: jdbc:h2:mem:polizasdb
+  jpa:
+    open-in-view: false
