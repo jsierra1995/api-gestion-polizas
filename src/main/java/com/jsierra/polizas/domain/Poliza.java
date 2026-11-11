@@ -1,6 +1,7 @@
 package com.jsierra.polizas.domain;
 
 import com.jsierra.polizas.exception.ConflictoEstadoException;
+import com.jsierra.polizas.exception.RecursoNoEncontradoException;
 import com.jsierra.polizas.exception.ReglaNegocioException;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -154,6 +155,24 @@ public class Poliza {
         riesgos.stream()
                 .filter(Riesgo::estaActivo)
                 .forEach(riesgo -> riesgo.cancelar(ahora));
+    }
+
+    /**
+     * Cancela un riesgo de una colectiva. En una individual no se permite: dejaría una póliza activa
+     * sin riesgo; lo que corresponde es cancelar la póliza completa.
+     */
+    public Riesgo cancelarRiesgo(Long riesgoId, LocalDateTime ahora) {
+        if (tipo == TipoPoliza.INDIVIDUAL) {
+            throw new ReglaNegocioException("La póliza individual " + numero
+                    + " no permite cancelar su único riesgo por separado; se debe cancelar la póliza completa");
+        }
+        Riesgo riesgo = riesgos.stream()
+                .filter(r -> riesgoId.equals(r.getId()))
+                .findFirst()
+                .orElseThrow(() -> new RecursoNoEncontradoException(
+                        "El riesgo " + riesgoId + " no pertenece a la póliza " + numero));
+        riesgo.cancelar(ahora);
+        return riesgo;
     }
 
     private static BigDecimal calcularPrima(BigDecimal canonMensual, int mesesVigencia) {
