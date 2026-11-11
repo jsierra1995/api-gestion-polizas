@@ -14,3 +14,9 @@ spring:
 app:
   # IPC anual que se aplica al renovar (0.05 = 5 %). Valor de ejemplo: el real lo publica el DANE.
   ipc: 0.05
+  security:
+    # Valor del enunciado. En otro ambiente se sobrescribe con la variable APP_API_KEY.
+    api-key: ${APP_API_KEY:123456}
+  core:
+    # El mock vive en esta misma aplicación; en producción sería la URL de la capa media en WebLogic.
+    base-url: http://localhost:${server.port:8080}
