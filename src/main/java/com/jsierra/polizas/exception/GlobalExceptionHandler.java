@@ -19,7 +19,8 @@ import java.util.stream.Collectors;
 
 /**
  * Traduce excepciones a HTTP con un cuerpo uniforme:
- * 400 entrada inválida, 404 no existe, 409 conflicto de estado, 422 regla de negocio, 500 inesperado.
+ * 400 entrada inválida, 401 API key, 404 no existe, 409 conflicto de estado, 422 regla de negocio,
+ * 500 inesperado.
  */
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -28,6 +29,12 @@ public class GlobalExceptionHandler {
 
     /** 422 "Unprocessable Content" (RFC 9110); se toma por código para no depender del nombre de la constante. */
     private static final HttpStatus UNPROCESSABLE = HttpStatus.valueOf(422);
+
+    /** Lanzada por el filtro de API key y resuelta aquí para mantener el mismo formato de error. */
+    @ExceptionHandler(ApiKeyInvalidaException.class)
+    public ResponseEntity<RespuestaError> apiKeyInvalida(ApiKeyInvalidaException ex, HttpServletRequest request) {
+        return responder(HttpStatus.UNAUTHORIZED, ex.getMessage(), request);
+    }
 
     @ExceptionHandler(RecursoNoEncontradoException.class)
     public ResponseEntity<RespuestaError> noEncontrado(RecursoNoEncontradoException ex, HttpServletRequest request) {
