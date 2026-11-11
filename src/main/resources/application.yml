@@ -10,3 +10,7 @@ spring:
   h2:
     console:
       enabled: true
+
+app:
+  # IPC anual que se aplica al renovar (0.05 = 5 %). Valor de ejemplo: el real lo publica el DANE.
+  ipc: 0.05

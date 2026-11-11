@@ -16,6 +16,7 @@ import jakarta.persistence.Table;
 import jakarta.persistence.Version;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -122,6 +123,25 @@ public class Poliza {
         }
         riesgo.asignarPoliza(this);
         riesgos.add(riesgo);
+    }
+
+    /**
+     * Renueva por el mismo número de meses de la vigencia inicial, empezando el día siguiente al fin
+     * de la actual. Canon nuevo = canon x (1 + IPC), redondeado a 2 decimales (HALF_UP);
+     * la prima se recalcula con el canon nuevo. Una póliza RENOVADA se puede volver a renovar.
+     */
+    public void renovar(BigDecimal ipc) {
+        if (estado == EstadoPoliza.CANCELADA) {
+            throw new ConflictoEstadoException("La póliza " + numero + " está CANCELADA y no se puede renovar");
+        }
+        if (ipc == null || ipc.signum() < 0) {
+            throw new IllegalArgumentException("El IPC configurado debe ser cero o positivo");
+        }
+        this.canonMensual = canonMensual.multiply(BigDecimal.ONE.add(ipc)).setScale(2, RoundingMode.HALF_UP);
+        this.prima = calcularPrima(canonMensual, mesesVigencia);
+        this.fechaInicioVigencia = fechaFinVigencia.plusDays(1);
+        this.fechaFinVigencia = calcularFinVigencia(fechaInicioVigencia, mesesVigencia);
+        this.estado = EstadoPoliza.RENOVADA;
     }
 
     private static BigDecimal calcularPrima(BigDecimal canonMensual, int mesesVigencia) {

@@ -8,6 +8,7 @@ import com.jsierra.polizas.service.PolizaService;
 import com.jsierra.polizas.service.RiesgoService;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -37,5 +38,10 @@ public class PolizaController {
     @GetMapping("/{id}/riesgos")
     public List<RiesgoResponse> listarRiesgos(@PathVariable Long id) {
         return riesgoService.listarPorPoliza(id);
+    }
+
+    @PostMapping("/{id}/renovar")
+    public PolizaResponse renovar(@PathVariable Long id) {
+        return polizaService.renovar(id);
     }
 }
