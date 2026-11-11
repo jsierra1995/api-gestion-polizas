@@ -11,21 +11,9 @@
 	<groupId>com.jsierra</groupId>
 	<artifactId>api-gestion-polizas</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name/>
-	<description/>
-	<url/>
-	<licenses>
-		<license/>
-	</licenses>
-	<developers>
-		<developer/>
-	</developers>
-	<scm>
-		<connection/>
-		<developerConnection/>
-		<tag/>
-		<url/>
-	</scm>
+	<name>api-gestion-polizas</name>
+	<description>API de gestión de pólizas de arrendamiento individuales y colectivas</description>
+
 	<properties>
 		<java.version>17</java.version>
 	</properties>
